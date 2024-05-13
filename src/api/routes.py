@@ -20,3 +20,15 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@app.route('/users', methods=['POST'])
+def add_user():
+    request_data = request.get_json()
+    if not request_data or 'email' not in request_data or 'username' not in request_data or 'password' not in request_data:
+        raise APIException('Invalid request body', status_code=400)
+
+    new_user = User(email=request_data["email"], username=request_data["username"], password=request_data["password"])
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify(new_user.serialize())
